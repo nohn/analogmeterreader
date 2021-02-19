@@ -30,122 +30,16 @@ use PHPUnit\Framework\TestCase;
 
 final class NumberFromFileTest extends TestCase
 {
-    public function testCorrectIdentificationOfZero(): void
+    public function testCorrectIdentification(): void
     {
-        $path = __DIR__ . '/resources/images/0/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(0, $amr->getValue());
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfOne(): void
-    {
-        $path = __DIR__ . '/resources/images/1/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(1, $amr->getValue());
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfTwo(): void
-    {
-        $path = __DIR__ . '/resources/images/2/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(2, $amr->getValue());
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfThree(): void
-    {
-        $path = __DIR__ . '/resources/images/3/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(3, $amr->getValue());
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfFour(): void
-    {
-        $path = __DIR__ . '/resources/images/4/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(4, $amr->getValue());
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfFive(): void
-    {
-        $path = __DIR__ . '/resources/images/5/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(5, $amr->getValue());
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfSix(): void
-    {
-        $path = __DIR__ . '/resources/images/6/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(6, $amr->getValue());
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfSeven(): void
-    {
-        $path = __DIR__ . '/resources/images/7/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(7, $amr->getValue(), "Expected $file to be 7");
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfEight(): void
-    {
-        $path = __DIR__ . '/resources/images/8/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(8, $amr->getValue(), "Expected $path$file to be 8");
-            }
-        }
-    }
-
-    public function testCorrectIdentificationOfNine(): void
-    {
-        $path = __DIR__ . '/resources/images/9/';
-        $files = scandir($path);
-        foreach ($files as $file) {
-            if (is_file($path . $file)) {
-                $amr = new AnalogMeter($path . $file, 'r');
-                $this->assertEquals(9, $amr->getValue());
+        for ($i = 0; $i <= 9; $i++) {
+            $path = __DIR__ . '/resources/images/' . $i . '/';
+            $files = scandir($path);
+            foreach ($files as $file) {
+                if (is_file($path . $file)) {
+                    $amr = new AnalogMeter($path . $file, 'r');
+                    $this->assertEquals($i, $amr->getValue(), "Expected $path$file to be $i");
+                }
             }
         }
     }
