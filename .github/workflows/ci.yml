@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  unit-tests:
+    strategy:
+      matrix:
+        operating-system:
+          - ubuntu-latest
+        php-version:
+          - 7.4
+          - 8.0
+    name: unit-tests on php-${{ matrix.php-version }} - ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.operating-system }}
+
+    steps:
+      - name: Pull Code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: imagick
+          coverage: xdebug
+
+      - name: Install composer dependencies
+        run: composer update --no-ansi --no-interaction --no-progress
+
+      - name: Run unit tests
+        run: vendor/bin/phpunit tests

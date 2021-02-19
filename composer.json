@@ -1,0 +1,29 @@
+{
+  "name": "nohn/analog_meter_reader",
+  "description": "Read analog meters",
+  "version": "1.0.0",
+  "type": "library",
+  "license": "AGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Sebastian Nohn",
+      "email": "sebastian@nohn.net",
+      "role": "lead"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-imagick": "^3.4.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  },
+  "support": {
+    "issues": "https://github.com/nohn/analogmeterreader/issues"
+  },
+  "autoload": {
+    "psr-4": {
+      "nohn\\AnalogMeterReader\\": "src/"
+    }
+  }
+}
