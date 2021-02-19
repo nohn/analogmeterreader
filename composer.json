@@ -1,5 +1,5 @@
 {
-  "name": "nohn/analog_meter_reader",
+  "name": "nohn/analogmeterreader",
   "description": "Read analog meters",
   "version": "1.0.0",
   "type": "library",
