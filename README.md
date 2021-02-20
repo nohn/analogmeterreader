@@ -6,7 +6,7 @@ Reads analog meters with PHP.
 |---|---|---|---|---|---|---|---|---|---|
 | ![0](tests/resources/images/0/nohn1.png) | ![1](tests/resources/images/1/nohn1.png) | ![2](tests/resources/images/2/nohn1.png)| ![3](tests/resources/images/3/nohn1.png)| ![4](tests/resources/images/4/nohn1.png)| ![5](tests/resources/images/5/nohn1.png)| ![6](tests/resources/images/6/nohn1.png)| ![7](tests/resources/images/7/nohn1.png)| ![8](tests/resources/images/8/nohn1.png)| ![9](tests/resources/images/9/nohn1.png)
 
-![CI](https://github.com/nohn/analogmeterreader/workflows/CI/badge.svg)
+![CI](https://github.com/nohn/analogmeterreader/workflows/CI/badge.svg) [![Latest Stable Version](https://poser.pugx.org/nohn/analogmeterreader/v)](//packagist.org/packages/nohn/analogmeterreader) [![Total Downloads](https://poser.pugx.org/nohn/analogmeterreader/downloads)](//packagist.org/packages/nohn/analogmeterreader) [![Latest Unstable Version](https://poser.pugx.org/nohn/analogmeterreader/v/unstable)](//packagist.org/packages/nohn/analogmeterreader) [![License](https://poser.pugx.org/nohn/analogmeterreader/license)](//packagist.org/packages/nohn/analogmeterreader)
 
 ## Installation
 
