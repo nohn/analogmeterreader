@@ -32,6 +32,10 @@ $amr = new AnalogMeter($path_to_image_file, 'r');
 echo $amr->getValue();
 ```
 
+### Practical use example
+
+See [nohn/watermeter](https://github.com/nohn/watermeter) for a real world use case.
+
 ## How to contribute
 
 You can contribute to this project by:
