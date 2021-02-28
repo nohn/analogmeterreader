@@ -35,6 +35,9 @@ final class ImageRecognitionTest extends TestCase
         for ($i = 0; $i <= 9; $i++) {
             $path = __DIR__ . '/resources/images/' . $i . '/';
             $files = scandir($path);
+            if ($files === false) {
+                $this->markTestIncomplete('No test files found in ' . $path);
+            }
             foreach ($files as $file) {
                 if (is_file($path . $file)) {
                     $amr = new AnalogMeter($path . $file, 'r');
