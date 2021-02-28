@@ -28,13 +28,19 @@
 use nohn\AnalogMeterReader\AnalogMeter;
 use PHPUnit\Framework\TestCase;
 
-final class NumberFromImageTest extends TestCase
+final class ImageRecognitionTest extends TestCase
 {
     public function testCorrectIdentification(): void
     {
-        $file = __DIR__ . '/resources/images/1/nohn1.png';
-        $image = new Imagick($file);
-        $amr = new AnalogMeter($image, 'r');
-        $this->assertEquals(1, $amr->getValue(), "Expected $file to be 1");
+        for ($i = 0; $i <= 9; $i++) {
+            $path = __DIR__ . '/resources/images/' . $i . '/';
+            $files = scandir($path);
+            foreach ($files as $file) {
+                if (is_file($path . $file)) {
+                    $amr = new AnalogMeter($path . $file, 'r');
+                    $this->assertEquals($i, $amr->getValue(), "Expected $path$file to be $i");
+                }
+            }
+        }
     }
 }

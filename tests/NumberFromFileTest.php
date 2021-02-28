@@ -30,17 +30,10 @@ use PHPUnit\Framework\TestCase;
 
 final class NumberFromFileTest extends TestCase
 {
-    public function testCorrectIdentification(): void
+    public function testReadFromFile(): void
     {
-        for ($i = 0; $i <= 9; $i++) {
-            $path = __DIR__ . '/resources/images/' . $i . '/';
-            $files = scandir($path);
-            foreach ($files as $file) {
-                if (is_file($path . $file)) {
-                    $amr = new AnalogMeter($path . $file, 'r');
-                    $this->assertEquals($i, $amr->getValue(), "Expected $path$file to be $i");
-                }
-            }
-        }
+        $file = __DIR__ . '/resources/images/1/nohn1.png';
+        $amr = new AnalogMeter($file, 'r');
+        $this->assertEquals(1, $amr->getValue(), "Expected $file to be 1");
     }
 }
