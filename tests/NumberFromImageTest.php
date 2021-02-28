@@ -30,7 +30,7 @@ use PHPUnit\Framework\TestCase;
 
 final class NumberFromImageTest extends TestCase
 {
-    public function testCorrectIdentification(): void
+    public function testReadImage(): void
     {
         $file = __DIR__ . '/resources/images/1/nohn1.png';
         $image = new Imagick($file);
