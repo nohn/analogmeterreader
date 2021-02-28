@@ -26,7 +26,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: imagick
           coverage: xdebug
-	  tools: php-cs-fixer
+          tools: php-cs-fixer
 
       - name: Install composer dependencies
         run: composer update --no-ansi --no-interaction --no-progress
