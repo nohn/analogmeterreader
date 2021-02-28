@@ -26,10 +26,13 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: imagick
           coverage: xdebug
-          tools: phpstan
+          tools: phpstan, psalm
 
       - name: Install composer dependencies
         run: composer update --no-ansi --no-interaction --no-progress
+
+      - name: Run Psalm
+        run: psalm --output-format=github
 
       - name: Run PHPStan
         run: phpstan analyse src
