@@ -109,7 +109,7 @@ class AnalogMeter
 
         $currentYStep = 0;
 
-        $stepWithHighestSignificance = array('value' => 0);
+        $stepWithHighestSignificance = array('value' => 0, 'xStep' => 0, 'yStep' => 0);
 
         $relativeNeedleSignificance = array('r' => 0, 'g' => 0, 'b' => 0);
 
