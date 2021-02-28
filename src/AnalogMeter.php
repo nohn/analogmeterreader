@@ -93,6 +93,7 @@ class AnalogMeter
      * (3) And remember, which sub-image had the highest proximity to $this->needleColour
      * (4) After iterating over all sub-images, we return the corresponding number for the most significant sub-image
      *
+     * @param bool $debug
      * @return int
      */
     private function processImage(bool $debug = false): int
