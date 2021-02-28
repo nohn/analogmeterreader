@@ -63,7 +63,7 @@ class AnalogMeter
         $this->strokeColor = new ImagickPixel('white');
     }
 
-    public function getValue($debug = false): int
+    public function getValue(bool $debug = false): int
     {
         return $this->processImage($debug);
     }
@@ -93,9 +93,9 @@ class AnalogMeter
      * (3) And remember, which sub-image had the highest proximity to $this->needleColour
      * (4) After iterating over all sub-images, we return the corresponding number for the most significant sub-image
      *
-     * @return string
+     * @return int
      */
-    private function processImage($debug = false): int
+    private function processImage(bool $debug = false): int
     {
         // (1) Split the image in sub-images.
         $meterWidth = $this->inputImage->getImageWidth();
@@ -103,12 +103,12 @@ class AnalogMeter
 
         // (1.a) The number of the sub-images is determined by $this->stepMapping
         $stepCount = count($this->stepMapping);
-        $stepWidth = ceil($meterWidth / $stepCount);
-        $stepHeight = ceil($meterHeight / $stepCount);
+        $stepWidth = (int)ceil($meterWidth / $stepCount);
+        $stepHeight = (int)ceil($meterHeight / $stepCount);
 
         $currentYStep = 0;
 
-        $stepWithHighestSignificance = array('value' => 0);
+        $stepWithHighestSignificance = array('value' => 0, );
 
         $relativeNeedleSignificance = array('r' => 0, 'g' => 0, 'b' => 0);
 
