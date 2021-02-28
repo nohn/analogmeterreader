@@ -1,3 +1,7 @@
+# 2021-02-08 v1.2.0
+
+- Improve resolution
+
 # 2021-02-08 v1.1.1
 
 - Tune recognition matrix

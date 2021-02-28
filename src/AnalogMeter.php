@@ -40,15 +40,16 @@ class AnalogMeter
 
     private array $stepMapping = array(
         // @formatter:off
-        '1' => array(                    '3' => 8, '4' => 7, '5' => 7, '6' => 7, '7' => 6, '8' => 6,         ),
-        '2' => array(          '2' => 8, '3' => 8, '4' => 8, '5' => 7, '6' => 7, '7' => 6, '8' => 6,         ),
-        '3' => array('1' => 9, '2' => 9, '3' => 8,                                         '8' => 5, '9' => 5),
-        '4' => array('1' => 9, '2' => 9,                                                   '8' => 5, '9' => 5),
-        '5' => array('1' => 0, '2' => 0,                                                   '8' => 5, '9' => 5),
-        '6' => array('1' => 0, '2' => 0,                                                   '8' => 4, '9' => 4),
-        '7' => array(          '2' => 1, '3' => 1,                               '7' => 3, '8' => 3,         ),
-        '8' => array(          '2' => 1, '3' => 1, '4' => 2, '5' => 2, '6' => 3, '7' => 3, '8' => 3,         ),
-        '9' => array(                    '3' => 1, '4' => 2, '5' => 2, '6' => 2, '7' => 3,                   ),
+        '1'  => array(                              '4' => 8, '5' => 7, '6' => 7, '7' => 6,                              ),
+        '2'  => array(          '2' => 8, '3' => 8, '4' => 8, '5' => 7, '6' => 7, '7' => 6, '8' => 6, '9' => 6,          ),
+        '3'  => array('1' => 9, '2' => 8, '3' => 8, '4' => 8,                               '8' => 6, '9' => 6, '10' => 5),
+        '4'  => array('1' => 9, '2' => 9,                                                             '9' => 5, '10' => 5),
+        '5'  => array('1' => 9, '2' => 9,                                                             '9' => 5, '10' => 5),
+        '6'  => array('1' => 0, '2' => 0,                                                             '9' => 4, '10' => 4),
+        '7'  => array('1' => 0, '2' => 0,                                                             '9' => 4, '10' => 4),
+        '8'  => array(          '2' => 1, '3' => 1,                                         '8' => 3, '9' => 3,          ),
+        '9'  => array(          '2' => 1, '3' => 1, '4' => 1, '5' => 2, '6' => 2, '7' => 3, '8' => 3, '9' => 3,          ),
+        '10' => array(                              '4' => 2, '5' => 2, '6' => 2, '7' => 3,                              ),
         // @formatter:on
     );
 
@@ -98,14 +99,22 @@ class AnalogMeter
      */
     private function processImage(bool $debug = false): int
     {
+        $workImage = clone $this->inputImage;
         // (1) Split the image in sub-images.
-        $meterWidth = $this->inputImage->getImageWidth();
-        $meterHeight = $this->inputImage->getImageHeight();
+        $inputWidth = $workImage->getImageWidth();
+        $inputHeight = $workImage->getImageHeight();
 
         // (1.a) The number of the sub-images is determined by $this->stepMapping
         $stepCount = count($this->stepMapping);
-        $stepWidth = (int)ceil($meterWidth / $stepCount);
-        $stepHeight = (int)ceil($meterHeight / $stepCount);
+        // Scale to the next $stepCount, so the image can easily be divided
+        $workImage->scaleImage(ceil($inputWidth/$stepCount)*$stepCount, ceil($inputHeight/$stepCount)*$stepCount);
+        $workImage->setImagePage(0, 0, 0, 0);
+        $meterWidth = $workImage->getImageWidth();
+        $meterHeight = $workImage->getImageHeight();
+
+
+        $stepWidth = (int)($meterWidth / $stepCount);
+        $stepHeight = (int)($meterHeight / $stepCount);
 
         $currentYStep = 0;
 
@@ -114,7 +123,7 @@ class AnalogMeter
         $relativeNeedleSignificance = array('r' => 0, 'g' => 0, 'b' => 0);
 
         if ($debug) {
-            $imageDebug = clone $this->inputImage;
+            $imageDebug = clone $workImage;
             $xDrawn = array();
             $allStepData = array();
         }
@@ -149,7 +158,7 @@ class AnalogMeter
                 if (!isset($this->stepMapping[$currentXStep][$currentYStep]))
                     continue;
                 // (2) For each sub-image, we determine the relative r, g and b values
-                $stepImage = clone $this->inputImage;
+                $stepImage = clone $workImage;
                 $stepImage->cropImage($stepWidth, $stepHeight, $x, $y);
                 $stepHistogram = $stepImage->getImageHistogram();
                 $red = 0;
