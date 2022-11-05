@@ -13,6 +13,7 @@ jobs:
         php-version:
           - 7.4
           - 8.0
+          - 8.1
     name: unit-tests on php-${{ matrix.php-version }} - ${{ matrix.operating-system }}
     runs-on: ${{ matrix.operating-system }}
 
