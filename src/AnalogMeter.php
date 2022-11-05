@@ -107,7 +107,7 @@ class AnalogMeter
         // (1.a) The number of the sub-images is determined by $this->stepMapping
         $stepCount = count($this->stepMapping);
         // Scale to the next $stepCount, so the image can easily be divided
-        $workImage->scaleImage(ceil($inputWidth/$stepCount)*$stepCount, ceil($inputHeight/$stepCount)*$stepCount);
+        $workImage->scaleImage((int)ceil($inputWidth/$stepCount)*$stepCount, (int)ceil($inputHeight/$stepCount)*$stepCount);
         $workImage->setImagePage(0, 0, 0, 0);
         $meterWidth = $workImage->getImageWidth();
         $meterHeight = $workImage->getImageHeight();
