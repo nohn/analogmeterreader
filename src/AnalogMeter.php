@@ -38,26 +38,33 @@ class AnalogMeter
     private float $strokeOpacity = 0.7;
     private array $debugData;
 
-    private array $stepMapping = array(
+    private array $stepMapping = [
         // @formatter:off
-        '1'  => array(                              '4' => 8, '5' => 7, '6' => 7, '7' => 6,                              ),
-        '2'  => array(          '2' => 8, '3' => 8, '4' => 8, '5' => 7, '6' => 7, '7' => 6, '8' => 6, '9' => 6,          ),
-        '3'  => array('1' => 9, '2' => 8, '3' => 8, '4' => 8,                               '8' => 6, '9' => 6, '10' => 5),
-        '4'  => array('1' => 9, '2' => 9,                                                             '9' => 5, '10' => 5),
-        '5'  => array('1' => 9, '2' => 9,                                                             '9' => 5, '10' => 5),
-        '6'  => array('1' => 0, '2' => 0,                                                             '9' => 4, '10' => 4),
-        '7'  => array('1' => 0, '2' => 0,                                                             '9' => 4, '10' => 4),
-        '8'  => array(          '2' => 1, '3' => 1,                                         '8' => 3, '9' => 3,          ),
-        '9'  => array(          '2' => 1, '3' => 1, '4' => 1, '5' => 2, '6' => 2, '7' => 3, '8' => 3, '9' => 3,          ),
-        '10' => array(                              '4' => 2, '5' => 2, '6' => 2, '7' => 3,                              ),
+        '1'  => [                              '4' => 8, '5' => 7, '6' => 7, '7' => 6],
+        '2'  => [          '2' => 8, '3' => 8, '4' => 8, '5' => 7, '6' => 7, '7' => 6, '8' => 6, '9' => 6],
+        '3'  => ['1' => 9, '2' => 8, '3' => 8, '4' => 8,                               '8' => 6, '9' => 6, '10' => 5],
+        '4'  => ['1' => 9, '2' => 9,                                                             '9' => 5, '10' => 5],
+        '5'  => ['1' => 9, '2' => 9,                                                             '9' => 5, '10' => 5],
+        '6'  => ['1' => 0, '2' => 0,                                                             '9' => 4, '10' => 4],
+        '7'  => ['1' => 0, '2' => 0,                                                             '9' => 4, '10' => 4],
+        '8'  => [          '2' => 1, '3' => 1,                                         '8' => 3, '9' => 3],
+        '9'  => [          '2' => 1, '3' => 1, '4' => 1, '5' => 2, '6' => 2, '7' => 3, '8' => 3, '9' => 3],
+        '10' => [                              '4' => 2, '5' => 2, '6' => 2, '7' => 3],
         // @formatter:on
-    );
+    ];
 
     public function __construct($inputImage, string $needleColour = 'r')
     {
-        if (is_a($inputImage, 'Imagick')) {
+        if (!in_array($needleColour, ['r', 'g', 'b'], true)) {
+            throw new \InvalidArgumentException("Invalid needle colour: $needleColour. Must be 'r', 'g', or 'b'.");
+        }
+
+        if ($inputImage instanceof Imagick) {
             $this->inputImage = $inputImage;
         } else {
+            if (!file_exists($inputImage)) {
+                throw new \InvalidArgumentException("Image file not found: $inputImage");
+            }
             $this->inputImage = new Imagick($inputImage);
         }
         $this->needleColour = $needleColour;
@@ -99,83 +106,57 @@ class AnalogMeter
      */
     private function processImage(bool $debug = false): int
     {
-        $workImage = clone $this->inputImage;
-        // (1) Split the image in sub-images.
-        $inputWidth = $workImage->getImageWidth();
-        $inputHeight = $workImage->getImageHeight();
-
-        // (1.a) The number of the sub-images is determined by $this->stepMapping
-        $stepCount = count($this->stepMapping);
-        // Scale to the next $stepCount, so the image can easily be divided
-        $workImage->scaleImage((int)ceil($inputWidth/$stepCount)*$stepCount, (int)ceil($inputHeight/$stepCount)*$stepCount);
-        $workImage->setImagePage(0, 0, 0, 0);
+        $workImage = $this->getPreprocessedImage();
         $meterWidth = $workImage->getImageWidth();
         $meterHeight = $workImage->getImageHeight();
 
-
+        $stepCount = count($this->stepMapping);
         $stepWidth = (int)($meterWidth / $stepCount);
         $stepHeight = (int)($meterHeight / $stepCount);
 
         $currentYStep = 0;
-
-        $stepWithHighestSignificance = array('value' => 0, 'xStep' => 0, 'yStep' => 0);
-
-        $relativeNeedleSignificance = array('r' => 0, 'g' => 0, 'b' => 0);
+        $stepWithHighestSignificance = ['value' => 0, 'xStep' => 0, 'yStep' => 0];
 
         if ($debug) {
             $imageDebug = clone $workImage;
-            $xDrawn = array();
-            $allStepData = array();
+            $xDrawn = [];
+            $allStepData = [];
         }
 
-        // (1) Split the image in sub-images. (x)
+        // (1) Split the image in sub-images. (y)
         for ($y = 0; $y <= $stepCount * $meterHeight; $y += $stepHeight) {
             $currentYStep++;
             $currentXStep = 0;
 
             if ($debug) {
-                $draw = new ImagickDraw();
-                $draw->setStrokeColor($this->strokeColor);
-                $draw->setStrokeOpacity($this->strokeOpacity);
-                $draw->line(0, $y, $meterWidth, $y);
-                $draw->setStrokeWidth(1);
-                $draw->setFillOpacity(0);
-                $imageDebug->drawImage($draw);
+                $this->drawDebugYLine($imageDebug, $y, $meterWidth);
             }
-            // (1) Split the image in sub-images. (y)
+
+            // (1) Split the image in sub-images. (x)
             for ($x = 0; $x <= $stepCount * $meterWidth; $x += $stepWidth) {
                 $currentXStep++;
+
                 if ($debug && !isset($xDrawn[$x])) {
-                    $draw = new ImagickDraw();
-                    $draw->setStrokeColor($this->strokeColor);
-                    $draw->setStrokeOpacity($this->strokeOpacity);
-                    $draw->line($x, 0, $x, $meterHeight);
-                    $draw->setStrokeWidth(1);
-                    $imageDebug->drawImage($draw);
+                    $this->drawDebugXLine($imageDebug, $x, $meterHeight);
                     $xDrawn[$x] = true;
                 }
+
                 // We can ignore this step? Cool.
-                if (!isset($this->stepMapping[$currentXStep][$currentYStep]))
+                if (!isset($this->stepMapping[$currentXStep][$currentYStep])) {
                     continue;
+                }
+
                 // (2) For each sub-image, we determine the relative r, g and b values
-                $stepImage = clone $workImage;
-                $stepImage->cropImage($stepWidth, $stepHeight, $x, $y);
-                $stepHistogram = $stepImage->getImageHistogram();
-                $red = 0;
-                $green = 0;
-                $blue = 0;
-                foreach ($stepHistogram as $pixel) {
-                    $rgb = $pixel->getColor();
-                    $red += $rgb['r'];
-                    $green += $rgb['g'];
-                    $blue += $rgb['b'];
-                }
-                $relativeNeedleSignificance['r'] = $red / ($red + $green + $blue);
-                $relativeNeedleSignificance['g'] = $green / ($red + $green + $blue);
-                $relativeNeedleSignificance['b'] = $blue / ($red + $green + $blue);
+                $relativeNeedleSignificance = $this->calculateRelativeSignificance($workImage, $stepWidth, $stepHeight, $x, $y);
+
                 if ($debug) {
-                    $allStepData[(string)$relativeNeedleSignificance[$this->needleColour]] = array('xStep' => $currentXStep, 'yStep' => $currentYStep, 'number' => $this->stepMapping[$currentXStep][$currentYStep]);
+                    $allStepData[(string)$relativeNeedleSignificance[$this->needleColour]] = [
+                        'xStep' => $currentXStep,
+                        'yStep' => $currentYStep,
+                        'number' => $this->stepMapping[$currentXStep][$currentYStep]
+                    ];
                 }
+
                 // (3) And remember, which sub-image had the highest proximity to $this->needleColour
                 if ($stepWithHighestSignificance['value'] <= $relativeNeedleSignificance[$this->needleColour]) {
                     $stepWithHighestSignificance['value'] = $relativeNeedleSignificance[$this->needleColour];
@@ -184,12 +165,82 @@ class AnalogMeter
                 }
             }
         }
+
         if ($debug) {
             krsort($allStepData);
             $this->debugData['image'] = $imageDebug;
             $this->debugData['data'] = $allStepData;
         }
-        // (4) After iterating over all sub-images, we return the corresponding number for the most significant sub-image
+
         return $this->stepMapping[(int)$stepWithHighestSignificance['xStep']][(int)$stepWithHighestSignificance['yStep']];
+    }
+
+    private function getPreprocessedImage(): Imagick
+    {
+        $workImage = clone $this->inputImage;
+        // (1) Split the image in sub-images.
+        $inputWidth = $workImage->getImageWidth();
+        $inputHeight = $workImage->getImageHeight();
+        $stepCount = count($this->stepMapping);
+
+        // Scale to the next $stepCount, so the image can easily be divided
+        $workImage->scaleImage(
+            (int)ceil($inputWidth / $stepCount) * $stepCount,
+            (int)ceil($inputHeight / $stepCount) * $stepCount
+        );
+        $workImage->setImagePage(0, 0, 0, 0);
+
+        return $workImage;
+    }
+
+    private function calculateRelativeSignificance(Imagick $workImage, int $width, int $height, int $x, int $y): array
+    {
+        $stepImage = clone $workImage;
+        $stepImage->cropImage($width, $height, $x, $y);
+        $stepHistogram = $stepImage->getImageHistogram();
+
+        $red = 0;
+        $green = 0;
+        $blue = 0;
+
+        foreach ($stepHistogram as $pixel) {
+            $rgb = $pixel->getColor();
+            $red += $rgb['r'];
+            $green += $rgb['g'];
+            $blue += $rgb['b'];
+        }
+
+        $total = $red + $green + $blue;
+
+        if ($total === 0) {
+            return ['r' => 0, 'g' => 0, 'b' => 0];
+        }
+
+        return [
+            'r' => $red / $total,
+            'g' => $green / $total,
+            'b' => $blue / $total,
+        ];
+    }
+
+    private function drawDebugYLine(Imagick $image, int $y, int $width): void
+    {
+        $draw = new ImagickDraw();
+        $draw->setStrokeColor($this->strokeColor);
+        $draw->setStrokeOpacity($this->strokeOpacity);
+        $draw->line(0, $y, $width, $y);
+        $draw->setStrokeWidth(1);
+        $draw->setFillOpacity(0);
+        $image->drawImage($draw);
+    }
+
+    private function drawDebugXLine(Imagick $image, int $x, int $height): void
+    {
+        $draw = new ImagickDraw();
+        $draw->setStrokeColor($this->strokeColor);
+        $draw->setStrokeOpacity($this->strokeOpacity);
+        $draw->line($x, 0, $x, $height);
+        $draw->setStrokeWidth(1);
+        $image->drawImage($draw);
     }
 }
