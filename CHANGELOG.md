@@ -1,3 +1,7 @@
+# 2026-04-08 v1.2.2
+
+- Modernize PHP code style while retaining comptability to outdated PHP versions
+
 # 2021-02-08 v1.2.0
 
 - Improve resolution
