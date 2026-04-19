@@ -1,19 +1,17 @@
-# 2026-04-08 v1.2.2
+# 2026-04-19 v1.3.0
+- Bump dependencies to modern versions
 
-- Modernize PHP code style while retaining comptability to outdated PHP versions
+# 2026-04-08 v1.2.2
+- Modernize PHP code style while retaining compatibility to outdated PHP versions
 
 # 2021-02-08 v1.2.0
-
 - Improve resolution
 
 # 2021-02-08 v1.1.1
-
 - Tune recognition matrix
 
 # 2021-02-28 v1.1.0
-
 - Improve resolution
 
 # 2021-02-19 v1.0.0
-
 - First public release
